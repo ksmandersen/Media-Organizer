@@ -45,7 +45,7 @@ duplicate files then you need to disable the following option in iTunes:
 In the Advanced Preferences pane disable the option named
 "Copy files to iTunes Media folder when adding to library" (see image below)
 
-![iTunes preferences](https://github.com/ksmandersen/Media-Sorter/blob/master/images/itunes.png?raw=true)
+![iTunes preferences](https://github.com/ksmandersen/Media-Sorter/blob/master/img/itunes.png?raw=true)
 
 ## Dependencies
 
