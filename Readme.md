@@ -1,4 +1,4 @@
-# Media Sorter
+# Media Organizer
 
 The code in this project will enable you to automatically organize your TV Shows
 into a nice folder structure, encode them into .h264 (m4v), 
@@ -45,7 +45,7 @@ duplicate files then you need to disable the following option in iTunes:
 In the Advanced Preferences pane disable the option named
 "Copy files to iTunes Media folder when adding to library" (see image below)
 
-![iTunes preferences](https://github.com/ksmandersen/Media-Sorter/blob/master/img/itunes.png?raw=true)
+![iTunes preferences](https://github.com/ksmandersen/Media-Organizer/blob/master/img/itunes.png?raw=true)
 
 ## Dependencies
 
