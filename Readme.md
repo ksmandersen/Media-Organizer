@@ -84,6 +84,28 @@ by executing this command:
 Navigate to the cloned folder and run this command:
 
 	./Run.sh
+	
+Several options can be passed along to override the config file
+
+	Usage: Run.sh [options]
+		-h, --help						Display this screen
+		-v, --verbose					Run verbosely
+
+	Paths:
+		-i, --input-path PATH			Input directory for video files
+		-o, --output-path PATH			Output directory for video files
+			--handbrake-cli PATH		Path to the HandbrakeCLI binary
+	
+	Features:
+			--skip-tags					Don't add mp4v2 tags to video files
+			--skip-import				Don't import video files to iTunes
+			--skip-encode				Don't encode video files
+			
+### Important
+
+Unfortunately it is not possible to pass pathnames with spaces in yet.
+This will be fixed soon! If your pathname has a space in it then edit
+the configuration file instead.
 
 ## License
 This is free and unencumbered software released into the public domain.
