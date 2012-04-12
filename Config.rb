@@ -8,11 +8,11 @@ $config = {
 	
 	# The path containing video files to be processed
 	# overwritten by: -i, --input-path
-	:origin_path => "/Users/ksma/Downloads/TestIn",
+	:origin_path => "/Volumes/Macintosh HD/Download/TV Shows",
 	
 	# The path to put the renamed and tagged videos
 	# overwritten by: -o, --output-path
-	:target_path => "/Users/ksma/Downloads/TestOut",
+	:target_path => "/Volumes/Macintosh HD/TV Shows",
 	
 	# Where is the Handbrake CLI located?
 	# overwritten by: --handbrake-cli

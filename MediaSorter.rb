@@ -4,6 +4,8 @@ require "./MediaItem"
 
 require "fileutils"
 require "handbrake"
+require "optparse"
+require "pathname"
 
 $season_regexp = /(s[0-9]+e[0-9]+)|([0-9]+x[0-9]+)/i
 
@@ -197,6 +199,71 @@ class MediaSorter
 	end # process
 end
 
+OptionParser.accept(Pathname) do |pn|
+	begin
+		Pathname.new(pn) if pn
+		raise "No such directory" unless File.directory?(pn)
+	rescue ArgumentError
+		raise OptionParser::InvalidArgument, s
+	end
+end
+
+# Parse command line arguments
+OptionParser.new do |opts|
+	opts.banner = "Usage: Run.sh [options]"
+	
+	# This displays the help screen, all programs are
+	# assumed to have this option.
+	opts.on( '-h', '--help', 'Display this screen' ) do
+		puts opts
+		exit
+	end
+	
+	# Verbose output. Changes log level to debug
+	opts.on("-v", "--verbose", "Run verbosely") do |v|
+		$config[:log_level] = Logger::DEBUG
+	end
+	
+	opts.separator ""
+	opts.separator "Paths:"
+	
+	# change orgin_path
+	opts.on("-i PATH", "--input-path PATH", "Input directory for video files") do |d|
+		puts d
+		$config[:origin_path] = d 
+	end
+	
+	# Change target_path
+	opts.on("-o PATH", "--output-path PATH", "Output directory for video files") do |d|
+		$config[:target_path] = d
+	end
+	
+	# Change handbrake_cli
+	opts.on("--handbrake-cli PATH", "Path to the HandbrakeCLI binary") do |d|
+		$config[:target_path] = d
+	end
+	
+	opts.separator ""
+	opts.separator "Features:"
+	
+	# Skip tags
+	opts.on("--skip-tags", "Don't add mp4v2 tags to video files") do
+		$config[:do_tags] = false
+	end
+	
+	# Skip import
+	opts.on("--skip-import", "Don't import video files to iTunes") do
+		$config[:do_import] = false
+	end
+	
+	# Skip tags
+	opts.on("--skip-encode", "Don't encode video files") do
+		$config[:do_encode] = false
+	end
+		
+end.parse!
+
+# Let the magic begin!
 sorter = MediaSorter.new
 sorter.search
 sorter.process

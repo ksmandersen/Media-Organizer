@@ -16,7 +16,7 @@ trap "rm -f ${LOCKFILE}; exit" INT TERM EXIT
 echo $$ > ${LOCKFILE}
 
 # Run the updating script
-ruby ${SCRIPTFILE}
+ruby ${SCRIPTFILE} $@
 
 # Remove the lock
 rm -f ${LOCKFILE}
