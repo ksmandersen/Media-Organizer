@@ -3,7 +3,7 @@
 DIR="$( cd -P "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 LOCKFILE="tmp/cron_media_sorter.lock"
-SCRIPTFILE=$DIR/MediaSorter.rb
+SCRIPTFILE=$DIR/Run.rb
 
 # Safe guard. Don't start if the lock is set
 if [ -e ${LOCKFILE} ] && kill -0 `cat ${LOCKFILE}`; then

@@ -1,7 +1,7 @@
 # Media Organizer
 
 The code in this project will enable you to automatically organize your TV Shows
-into a nice folder structure, encode them into .h264 (m4v), 
+into a nice folder structure, encode them into MPEG-4 (m4v), 
 tag them with correct mp4v2 tags and automatically
 add them to iTunes.
 
@@ -25,7 +25,7 @@ The output structure will look like this:
 	
 ### Encoding
 
-Tv show files can be encoded from avi or mkv into .h264 (m4v) files.
+Tv show files can be encoded from avi or mkv into MPEG-4 (m4v) files.
 This is done using the Handbrake CLI runtime.
 
 ### Tagging
@@ -92,8 +92,8 @@ Several options can be passed along to override the config file
 		-v, --verbose					Run verbosely
 
 	Paths:
-		-i, --input-path PATH			Input directory for video files
-		-o, --output-path PATH			Output directory for video files
+		-i, --input-dir DIR			Input directory for video files
+		-o, --output-dir DIR			Output directory for video files
 			--handbrake-cli PATH		Path to the HandbrakeCLI binary
 	
 	Features:

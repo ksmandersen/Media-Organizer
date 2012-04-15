@@ -8,11 +8,11 @@ $config = {
 	
 	# The path containing video files to be processed
 	# overwritten by: -i, --input-path
-	:origin_path => "/Volumes/Macintosh HD/Download/TV Shows",
+	:origin_dir => "/Volumes/Media/Download/Shows",
 	
 	# The path to put the renamed and tagged videos
 	# overwritten by: -o, --output-path
-	:target_path => "/Volumes/Macintosh HD/TV Shows",
+	:target_dir => "/Volumes/Media/Shows",
 	
 	# Where is the Handbrake CLI located?
 	# overwritten by: --handbrake-cli
@@ -23,16 +23,24 @@ $config = {
 	########################
 	
 	# Wanna add some meta tags?
-	# overwritten by: --skip-tags
+	# overwritten by: --[no-]tags
 	:do_tags => true,
 	
 	# Wanna import into iTunes?
-	# overwritten by: --skip-import
+	# overwritten by: --[no-]import
 	:do_import => true,
 	
 	# Wanna encode files?
-	# overwritten by: --skip-encode
+	# overwritten by: --[no-]encode
 	:do_encode => true,
+	
+	# Wanna delete the original files after import?
+	# overwritten by: --[no-]cleanup
+	:do_cleanup => false,
+	
+	# Force a overwrite in target directory?
+	# overwritten by: -f, --force
+	:do_force => false,
 	
 	########################
 	##       LOGGING       #
@@ -51,7 +59,7 @@ $config = {
 	
 	:lib_path => File.dirname(__FILE__) + '/lib',
 	
-	:extension_supported => ["mp4", "m4v", "avi", "mkv"],
+	:extensions_supported => ["mp4", "m4v", "avi", "mkv"],
 	:extensions_native => ["mp4", "m4v"]	
 }
 

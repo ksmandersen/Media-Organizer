@@ -11,8 +11,14 @@ class MediaItem
 	# Is the video file of a native extension?
 	# Native extensions are expressed in the
 	# configuration file.
-	def native?
-		return $config[:extensions_native].include?(self.extension_original)
+	attr_accessor :native
+	
+	# Has the video been encoded yet?
+	attr_accessor :encoded
+	
+	def initialize
+		self.native = false
+		self.encoded = false
 	end
 	
 	# Is the media item valid?
@@ -24,7 +30,8 @@ class MediaItem
 	
 	# The output filename of the media item
 	def to_s
-		return self.show + ' - S' + Helpers::leadingzero(self.season) + 'E' + Helpers::leadingzero(self.episode) + '.' + self.extension
+		ext = (self.encoded) ? 'm4v' : self.extension
+		return self.show + ' - S' + Helpers::leadingzero(self.season) + 'E' + Helpers::leadingzero(self.episode) + '.' + ext
 	end
 	
 	# What is the original filename?
@@ -45,9 +52,9 @@ class MediaItem
 		# and join the path back together
 		paths = self.fullpath.split('/')
 		if paths.length > 1 then
-			res = Helpers::trailingslash(Helpers::trailingslash($config[:origin_path]) + paths.slice(0, paths.length - 1).join('/'))
+			res = Helpers::trailingslash(Helpers::trailingslash($config[:origin_dir]) + paths.slice(0, paths.length - 1).join('/'))
 		else
-			res = Helpers::trailingslash($config[:origin_path])
+			res = Helpers::trailingslash($config[:origin_dir])
 		end
 		return res
 	end
@@ -57,6 +64,6 @@ class MediaItem
 	# Example:
 	# /target/How I Met Your Mother/Season 1/
 	def target
-		return Helpers::trailingslash($config[:target_path]) + Helpers::trailingslash(self.show) + Helpers::trailingslash("Season " + self.season.to_s)
+		return Helpers::trailingslash($config[:target_dir]) + Helpers::trailingslash(self.show) + Helpers::trailingslash("Season " + self.season.to_s)
 	end
 end
