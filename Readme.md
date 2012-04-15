@@ -13,6 +13,7 @@ understands the following formats:
 	How.I.Met.Your.Mother.S01E04.garbage.m4v
 	How I Met Your Mother S01E04 garbage.m4v
 	How I Met Your Mother 01x04 garbage.m4v
+	How I Met Your Mother - 104.garbage.m4v
 	How I Met Your Mother - S01E04 garbage.m4v
 	How I Met Your Mother - [1x04] garbage.m4v
 	How I Met Your Mother/S01E04.garbage.m4v
@@ -88,24 +89,37 @@ Navigate to the cloned folder and run this command:
 Several options can be passed along to override the config file
 
 	Usage: Run.sh [options]
-		-h, --help						Display this screen
-		-v, --verbose					Run verbosely
+		-h, --help                       Display this screen
+		-v, --verbose                    Run verbosely
+		-f, --force                      Force overwrite of video files in target dir
 
 	Paths:
-		-i, --input-dir DIR			Input directory for video files
-		-o, --output-dir DIR			Output directory for video files
-			--handbrake-cli PATH		Path to the HandbrakeCLI binary
+		-i, --input-dir DIR              Input directory for video files
+		-o, --output-dir DIR             Output directory for video files
+			--handbrake-cli PATH         Path to the HandbrakeCLI binary
 	
 	Features:
-			--skip-tags					Don't add mp4v2 tags to video files
-			--skip-import				Don't import video files to iTunes
-			--skip-encode				Don't encode video files
+			--[no-]tags                  Add mp4v2 tags to video files
+			--[no-]encode                Encode video files to MPEG-4
+			--[no-]import                Import video files to iTunes
+			--[no-]cleanup               Delete original video files
 			
 ### Important
 
 Unfortunately it is not possible to pass pathnames with spaces in yet.
-This will be fixed soon! If your pathname has a space in it then edit
-the configuration file instead.
+This will be fixed soon! There is a workaround which is to run the
+ruby script directly instead like so:
+
+	ruby Run.sh
+
+This will allow you to pass in options with spaces. However only use this
+method with caution, spawning another process might cause the program
+to damage your data.
+
+## Disclaimer
+This software is being actively developed and may have several bugs.
+Use with caution and at own risk. This software is provided without
+warrenty of any kind (see License).
 
 ## License
 This is free and unencumbered software released into the public domain.
