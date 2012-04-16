@@ -60,7 +60,7 @@ module Actions
 				end
 				command.join
 			rescue
-				$log.error("> ERROR. Something wen't wrong while tagging.. skipping")
+				$log.error("> ERROR. Something went wrong while tagging.. skipping")
 				$log.error($!)
 				raise
 			end
@@ -71,6 +71,11 @@ module Actions
 	
 	class Encode
 		def self.run(item)
+			if !$config[:do_encode]
+				$log.debug("> Encoding disabled.. skipping")
+				raise
+			end
+			
 			item.encoded = true
 			
 			file = item.origin + item.filename
@@ -114,7 +119,7 @@ module Actions
 				end
 				command.join
 			rescue
-				$log.error("> Something wen't wrong while encoding.. skipping")
+				$log.error("> Something went wrong while encoding.. skipping")
 				$log.error($!)
 				raise
 			end
@@ -137,13 +142,24 @@ module Actions
 				raise
 			end
 			
+			if !Dir.exists?(item.target)
+				$log.debug("> Creating target directory")
+				begin
+					FileUtils.mkdir_p(item.target)
+				rescue
+					$log.error("> Failed to create target directory.. skipping")
+					$log.error($!)
+					raise
+				end
+			end
+			
 			# Check if the target already exists
 			if File.exists?(target)
 				if !$config[:do_force]
 					$log.error("> Target file already exists!.. skipping")
 					raise
 				end
-				
+			
 				# Force is with you, so remove the target
 				begin
 					FileUtils.rm(target)
