@@ -19,7 +19,8 @@ class MediaHandler
 				Actions::Tag.run(item)
 				Actions::Import.run(item)
 				Actions::Clean.run(item)
-			rescue 
+			rescue
+				$log.error($!)
 				next
 			end
 		end

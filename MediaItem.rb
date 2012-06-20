@@ -7,6 +7,7 @@ class MediaItem
 	attr_accessor :show, :season, :episode
 	attr_accessor :fullpath, :extension
 	attr_accessor :extension_original
+	attr_accessor :description, :title, :thumb_url, :year
 	
 	# Is the video file of a native extension?
 	# Native extensions are expressed in the

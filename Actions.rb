@@ -1,5 +1,7 @@
 require "fileutils"
 require "handbrake"
+require "tempfile"
+require "net/http"
 
 module Actions
 	class Import
@@ -38,36 +40,50 @@ module Actions
 	
 	class Tag
 		def self.run(item)
+			
 			if !$config[:do_tags]
 				$log.debug("> Tagging disabled.. skipping")
 				return
 			end
 			
-			if !$config[:extensions_native].include?(item.extension) and !item.encoded
-				$log.debug("> Cannot tag " + item.extension + " files.. skipping")
-				return
-			end
+			$log.debug("> Tagging file..")
 			
-			file = 	item.target + item.to_s
+			file = item.target + item.to_s
 			$log.debug("> Tag: " + file)
 			
-			workflow = Helpers::trailingslash($config[:lib_path]) + 'add_tv_tags.workflow'
-			cmd = 'automator -i "' + file + '" ' + workflow
+			tag_cmd = 'mp4tags -r AabcCdDeEgGHiIjlLmMnNoOpPBRsStTxXwyzZ --type tvshow --show "' + item.show + '" --season ' + item.season.to_s +  ' --episode ' + item.episode.to_s + ' --song "' + item.title + '" --year ' + item.year.to_s + ' --description "' + item.description + '" "' + file + '"'			
 			
 			begin
 				command = Thread.new do
-					system(cmd)
+					system(tag_cmd)
 				end
 				command.join
 			rescue
-				$log.error("> ERROR. Something went wrong while tagging.. skipping")
-				$log.error($!)
+				$log.error("> ERROR. Failed to tag file. Search went bad.. Skipping")
 				raise
 			end
 			
-			$log.debug("> Done!")
+			begin
+				tmpfile = Tempfile.new("thumb")
+				Net::HTTP.start("thetvdb.com") { |http|
+					resp = http.get(item.thumb_url)
+					tmpfile.write(resp.body)
+					
+					art_cmd = 'mp4art --remove --add "' + tmpfile.path + '" "' + file + '"'
+					command = Thread.new do
+						system(art_cmd)
+					end
+					command.join
+				}
+			rescue
+				$log.error("ERROR. Failed to art cover art")
+				raise
+			end
+			
 		end
 	end
+	
+	
 	
 	class Encode
 		def self.run(item)

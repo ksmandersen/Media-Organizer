@@ -1,5 +1,6 @@
 require "./MediaItem.rb"
 require "./Helpers.rb"
+require "tvdb_party"
 
 class MediaSearcher
 	attr_accessor :media
@@ -125,6 +126,7 @@ class MediaSearcher
 		item.show = Helpers::camelcase item.filename.split(match_p)[0].gsub(/\.|\-|\[|\_/) {|a| " " }.strip
 		
 		if !item.show.empty?
+			self.search(item)
 			$log.debug("> Show: " + item.show)
 			media.push item
 			return
@@ -150,9 +152,45 @@ class MediaSearcher
 			return
 		end
 		
+		self.search(item)
+		
 		$log.debug("> Show: " + item.show)
 		media.push item
 		
 	end
 	
+	def search(item)
+		begin
+				tvdb = TvdbParty::Search.new($config[:tvdb_api_key])
+				
+				$log.debug("Search TVDB for matches")
+				results = tvdb.search(item.show)
+				
+				if results.empty?
+					$log.debug("> No match found")
+					return
+				end
+				
+				series = tvdb.get_series_by_id(results[0]["seriesid"])
+				episode = series.get_episode(item.season, item.episode)
+				
+				if !series or !episode
+					$log.debug("> No match found")
+					return
+				end
+				
+				$log.debug("> Match found. Updating attributes..")
+				
+				item.show = series.name
+				item.description = episode.overview
+				item.title = episode.name
+				item.thumb_url = episode.thumb
+				item.year = episode.air_date.year
+
+			rescue
+				$log.error("> Failed to tag file. Search went bad")
+				$log.error($!)
+				raise
+		end	
+	end	
 end

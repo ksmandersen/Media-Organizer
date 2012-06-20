@@ -43,6 +43,14 @@ $config = {
 	:do_force => false,
 	
 	########################
+	##      API KEYS       #
+	########################
+	
+	# Used for looking up correct show titles
+	# fan art and etc.
+	:tvdb_api_key => "YOUR-API-KEY",
+	
+	########################
 	##       LOGGING       #
 	########################
 	
