@@ -1,0 +1,3 @@
+[submodule "lib/threadpool"]
+	path = lib/threadpool
+	url = https://github.com/meh/ruby-threadpool.git
