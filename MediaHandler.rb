@@ -32,8 +32,7 @@ class MediaHandler
 			}
 		end
 		
-		pool.join
-		return
+		return gets
 	end
 	
 end
