@@ -5,7 +5,7 @@ require "net/http"
 
 module Actions
 	class Import
-		def self.run(item)
+		def self.run(item, mutex)
 			if !$config[:do_import]
 				$log.debug("> Import disabled.. skipping")
 				return
@@ -24,10 +24,9 @@ module Actions
 			cmd = 'automator -i "' + file + '" ' + workflow
 			
 			begin
-				command = Thread.new do
+				mutex.synchronize {
 					system(cmd)
-				end
-				command.join
+				}
 			rescue
 				$log.error("> ERROR. Something went wrong while importing.. skipping")
 				$log.error($!)
@@ -54,10 +53,7 @@ module Actions
 			tag_cmd = 'mp4tags -r AabcCdDeEgGHiIjlLmMnNoOpPBRsStTxXwyzZ --type tvshow --show "' + item.show + '" --season ' + item.season.to_s +  ' --episode ' + item.episode.to_s + ' --song "' + item.title + '" --year ' + item.year.to_s + ' --description "' + item.description + '" "' + file + '"'			
 			
 			begin
-				command = Thread.new do
-					system(tag_cmd)
-				end
-				command.join
+				system(tag_cmd)
 			rescue
 				$log.error("> ERROR. Failed to tag file. Search went bad.. Skipping")
 				raise
@@ -70,10 +66,7 @@ module Actions
 					tmpfile.write(resp.body)
 					
 					art_cmd = 'mp4art --remove --add "' + tmpfile.path + '" "' + file + '"'
-					command = Thread.new do
-						system(art_cmd)
-					end
-					command.join
+					system(art_cmd)
 				}
 			rescue
 				$log.error("ERROR. Failed to art cover art")
@@ -130,10 +123,7 @@ module Actions
 				project = hb.input(file)
 				project.preset("AppleTV 2")
 				
-				command = Thread.new do
-					project.output(target)
-				end
-				command.join
+				project.output(target)
 			rescue
 				$log.error("> Something went wrong while encoding.. skipping")
 				$log.error($!)
@@ -145,7 +135,7 @@ module Actions
 	end
 	
 	class Copy
-		def self.run(item)
+		def self.run(item, mutex)
 			file = item.origin + item.filename
 			target = item.target + item.to_s
 			
@@ -158,16 +148,18 @@ module Actions
 				raise
 			end
 			
-			if !Dir.exists?(item.target)
-				$log.debug("> Creating target directory")
-				begin
-					FileUtils.mkdir_p(item.target)
-				rescue
-					$log.error("> Failed to create target directory.. skipping")
-					$log.error($!)
-					raise
-				end
-			end
+			mutex.synchronize {
+				if !Dir.exists?(item.target)
+					$log.debug("> Creating target directory")
+					begin
+						FileUtils.mkdir_p(item.target)
+					rescue
+						$log.error("> Failed to create target directory.. skipping")
+						$log.error($!)
+						raise
+					end
+				end	
+			}
 			
 			# Check if the target already exists
 			if File.exists?(target)

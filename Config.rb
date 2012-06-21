@@ -38,7 +38,7 @@ $config = {
 	# overwritten by: --[no-]cleanup
 	:do_cleanup => false,
 	
-	# Force a overwrite in target directory?
+	# Force a overwrite files in target directory?
 	# overwritten by: -f, --force
 	:do_force => false,
 	
