@@ -50,7 +50,7 @@ module Actions
 			file = item.target + item.to_s
 			$log.debug("> Tag: " + file)
 			
-			tag_cmd = 'mp4tags -r AabcCdDeEgGHiIjlLmMnNoOpPBRsStTxXwyzZ --type tvshow --show "' + item.show + '" --season ' + item.season.to_s +  ' --episode ' + item.episode.to_s + ' --song "' + item.title + '" --year ' + item.year.to_s + ' --description "' + item.description + '" "' + file + '"'			
+			tag_cmd = 'mp4tags -r AabcCdDeEgGHiIjlLmMnNoOpPBRsStTxXwyzZ --type tvshow --show "' + item.show + '" --season ' + item.season.to_s +  ' --episode ' + item.episode.to_s + ' --song "' + item.title + '" --year ' + item.year.to_s + ' "' + file + '"'			
 			
 			begin
 				system(tag_cmd)
