@@ -31,9 +31,9 @@ This is done using the Handbrake CLI runtime.
 
 ### Tagging
 
-mp4v2 metadata tags are automatically added using an Automater workflow
-from the Batch Rip for Automator bundle. The tags are downloaded from
-TheTVDB.
+mp4v2 metadata tags are automatically added using 
+[mp4v2 library](http://code.google.com/p/mp4v2/). The tags are downloaded 
+from TheTVDB.
 
 ### iTunes Import
 
@@ -58,19 +58,15 @@ is offered as an installer and the rubygem can be installed with his command:
 	
 	gem install handbrake
 
-Tagging and importing into iTunes requires OS X because
-it uses Automator workflows. One of the workflows requires
-[Batch Rip for Automator](http://forums.macrumors.com/showthread.php?t=1276323)
-(offered as an installer).
+Importing into iTunes requires OS X because it uses Automator workflows. 
+
+Tagging files requires [mp4v2 library](http://code.google.com/p/mp4v2/) which needs
+to be installed manually for now. It will be bundled in future releases.
 
 ## Installation
 To get started install all the dependencies and run this command:
 
 	git clone git://github.com/ksmandersen/Media-Sorter.git
-
-Then navigate to the cloned folder and add execution permissions to the "Runner"
-
-	chmod +x Run.sh
 	
 Open up the ```Config.rb``` file in the text editor of your choice and edit
 ```target_path```, ```origin_path``` and ```handbrake_cli```.
@@ -84,7 +80,7 @@ by executing this command:
 
 Navigate to the cloned folder and run this command:
 
-	./Run.sh
+	ruby Run.rb
 	
 Several options can be passed along to override the config file
 
@@ -104,18 +100,6 @@ Several options can be passed along to override the config file
 			--[no-]import                Import video files to iTunes
 			--[no-]cleanup               Delete original video files
 			
-### Important
-
-Unfortunately it is not possible to pass pathnames with spaces in yet.
-This will be fixed soon! There is a workaround which is to run the
-ruby script directly instead like so:
-
-	ruby Run.sh
-
-This will allow you to pass in options with spaces. However only use this
-method with caution, spawning another process might cause the program
-to damage your data.
-
 ## Disclaimer
 This software is being actively developed and may have several bugs.
 Use with caution and at own risk. This software is provided without
