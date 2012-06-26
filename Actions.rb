@@ -12,7 +12,7 @@ module Actions
 			end
 			
 			
-			if !$config[:extensions_native].include?(item.extension) and !item.encoded
+			if !$config[:extensions_native].include?(item.extension)
 				$log.debug("> Cannot tag " + item.extension + " files.. skipping")
 				return
 			end
@@ -30,9 +30,9 @@ module Actions
 			rescue
 				$log.error("> ERROR. Something went wrong while importing.. skipping")
 				$log.error($!)
-				raise
 			end
 			
+			item.imported = true
 			$log.debug("> Done!")
 		end
 	end
@@ -50,29 +50,32 @@ module Actions
 			file = item.target + item.to_s
 			$log.debug("> Tag: " + file)
 			
-			tag_cmd = 'mp4tags -r AabcCdDeEgGHiIjlLmMnNoOpPBRsStTxXwyzZ --type tvshow --show "' + item.show + '" --season ' + item.season.to_s +  ' --episode ' + item.episode.to_s + ' --song "' + item.title + '" --year ' + item.year.to_s + ' "' + file + '"'			
+			tag_cmd = 'mp4tags -r AabcCdDeEgGHiIjlLmMnNoOpPBRsStTxXwyzZ --type tvshow --show "' + item.show + '" --season ' + item.season.to_s +  ' --episode ' + item.episode.to_s + ' --song "' + item.title + '" --year ' + item.year.to_s + ' --description "' + item.description + '" "' + file + '"'
 			
 			begin
 				system(tag_cmd)
 			rescue
 				$log.error("> ERROR. Failed to tag file. Search went bad.. Skipping")
-				raise
 			end
 			
-			begin
-				tmpfile = Tempfile.new("thumb")
-				Net::HTTP.start("thetvdb.com") { |http|
-					resp = http.get(item.thumb_url)
-					tmpfile.write(resp.body)
+			if item.thumb_url
+				begin
+					tmpfile = Tempfile.new("thumb")
+					Net::HTTP.start("thetvdb.com") { |http|
+						resp = http.get(item.thumb_url)
+						tmpfile.write(resp.body)
+						
+						art_cmd = 'mp4art --remove --add "' + tmpfile.path + '" "' + file + '"'
+						system(art_cmd)
+					}
 					
-					art_cmd = 'mp4art --remove --add "' + tmpfile.path + '" "' + file + '"'
-					system(art_cmd)
-				}
-			rescue
-				$log.error("ERROR. Failed to art cover art")
-				raise
-			end
+				rescue
+					$log.error("ERROR. Failed to art cover art")
+					$log.error($!)
+				end
+			end # if item.thumb_url
 			
+			item.tagged = true
 		end
 	end
 	
@@ -82,7 +85,7 @@ module Actions
 		def self.run(item)
 			if !$config[:do_encode]
 				$log.debug("> Encoding disabled.. skipping")
-				raise
+				return
 			end
 			
 			item.encoded = true
@@ -96,14 +99,14 @@ module Actions
 			# Check if already exists
 			if !File.exists?(file)
 				$log.error("> Origin file doesn't exist!.. skipping")
-				raise
+				return
 			end
 			
 			# Check if the target already exists
 			if File.exists?(target)
 				if !$config[:do_force]
 					$log.error("> Target file already exists!.. skipping")
-					raise
+					return
 				end
 				
 				# Force is with you, so remove the target
@@ -112,7 +115,6 @@ module Actions
 				rescue
 					$log.error("> FAILED to copy file")
 					$log.error($!)
-					raise
 				end
 			end
 		
@@ -127,9 +129,10 @@ module Actions
 			rescue
 				$log.error("> Something went wrong while encoding.. skipping")
 				$log.error($!)
-				raise
+				return
 			end
 			
+			item.encoded = true
 			$log.debug("> Done!")
 		end
 	end
@@ -145,7 +148,7 @@ module Actions
 			# The file we're trying to copy doesn't exist
 			if !File.exists?(file)
 				$log.error("> Origin file doesn't exist!.. skipping")
-				raise
+				return
 			end
 			
 			mutex.synchronize {
@@ -156,7 +159,7 @@ module Actions
 					rescue
 						$log.error("> Failed to create target directory.. skipping")
 						$log.error($!)
-						raise
+						return
 					end
 				end	
 			}
@@ -165,7 +168,7 @@ module Actions
 			if File.exists?(target)
 				if !$config[:do_force]
 					$log.error("> Target file already exists!.. skipping")
-					raise
+					return
 				end
 			
 				# Force is with you, so remove the target
@@ -174,7 +177,6 @@ module Actions
 				rescue
 					$log.error("> FAILED to copy file")
 					$log.error($!)
-					raise
 				end
 			end
 			
@@ -184,9 +186,9 @@ module Actions
 			rescue
 				$log.error("> FAILED to copy file")
 				$log.error($!)
-				raise
 			end
 			
+			item.copied = true
 			$log.debug("> Done!")
 		end
 	end
@@ -203,7 +205,7 @@ module Actions
 			
 			if !File.exists?(file)
 				$log.error("> File doesn't exist.. skipping")
-				raise
+				return
 			end
 			
 			begin
@@ -211,9 +213,9 @@ module Actions
 			rescue
 				$log.error("> FAILED to remove file")
 				$log.error($!)
-				raise
 			end
 			
+			item.cleaned = true
 			$log.debug("> Done!")
 		end
 	end

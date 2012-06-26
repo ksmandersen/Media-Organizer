@@ -22,6 +22,10 @@ OptionParser.new do |opts|
 	opts.on("-f", "--force", "Force overwrite of video files in target dir") do |v|
 		$config[:do_force] = true
 	end
+	
+	opts.on("--dry-run", "Only match files, dont write anything") do |v|
+		$config[:dry_run] = true
+	end
 
 	opts.separator ""
 	opts.separator "Locations:"

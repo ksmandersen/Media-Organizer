@@ -10,12 +10,15 @@ begin
 	searcher = MediaSearcher.new
 	searcher.run!
 	
-	$log.debug("=============== PROCESS THE FILES ===============")
-	
-	handler = MediaHandler.new
-	handler.process(searcher.media)
-	
-	$log.debug("=============== ALL DONE ===============")
+	if !$config[:dry_run]
+		
+		$log.debug("=============== PROCESS THE FILES ===============")	
+		
+		handler = MediaHandler.new
+		handler.process(searcher.media)
+		
+		$log.debug("=============== ALL DONE ===============")
+	end
 
 rescue
 	$log.error("Something went wrong.. Aborting")

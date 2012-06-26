@@ -36,7 +36,7 @@ $config = {
 	
 	# Wanna delete the original files after import?
 	# overwritten by: --[no-]cleanup
-	:do_cleanup => false,
+	:do_cleanup => true,
 	
 	# Force a overwrite files in target directory?
 	# overwritten by: -f, --force
@@ -53,6 +53,9 @@ $config = {
 	########################
 	##       LOGGING       #
 	########################
+	
+	# Don't do any writes. Just match
+	:dry_run => false,
 	
 	# Should Handbrake print out a verbose trace?
 	:handbrake_trace => false,

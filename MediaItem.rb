@@ -9,17 +9,22 @@ class MediaItem
 	attr_accessor :extension_original
 	attr_accessor :description, :title, :thumb_url, :year
 	
+	# Flags for processing
+	attr_accessor :copied, :encoded, :tagged, :cleaned, :imported
+	
 	# Is the video file of a native extension?
 	# Native extensions are expressed in the
 	# configuration file.
 	attr_accessor :native
 	
-	# Has the video been encoded yet?
-	attr_accessor :encoded
 	
 	def initialize
 		self.native = false
+		self.copied = false
 		self.encoded = false
+		self.tagged = false
+		self.cleaned = false
+		self.imported = false
 	end
 	
 	# Is the media item valid?

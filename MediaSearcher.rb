@@ -1,12 +1,15 @@
 require "./MediaItem.rb"
 require "./Helpers.rb"
+require "./CacheHandler.rb"
 require "tvdb_party"
 
 class MediaSearcher
 	attr_accessor :media
+	attr_accessor :cache
 	
 	def initialize
 		self.media = Array.new
+		self.cache = CacheHandler.new
 	end
 	
 	def run!
@@ -86,7 +89,7 @@ class MediaSearcher
 		
 		# No match was found, carry on to next file
 		if match_p == nil then
-			$log.debug("> No match found")
+			$log.warn(file + " >> No match found")
 			return
 		end
 		
@@ -115,7 +118,7 @@ class MediaSearcher
 		end
 		
 		if item.season.zero? or item.episode.zero?
-			$log.debug("> Could not find valid season/episode (zero).. skipping")
+			$log.warn(file + " >> Could not find valid season/episode (zero).. skipping")
 			return
 		end
 		
@@ -148,7 +151,7 @@ class MediaSearcher
 		end
 		
 		if item.show.empty?
-			$log.debug("> Folder structure does not contain a show title.. skipping")
+			$log.warn(file + " >> Folder structure does not contain a show title.. skipping")
 			return
 		end
 		
@@ -161,36 +164,48 @@ class MediaSearcher
 	
 	def search(item)
 		begin
+			# Check the cache first
+			show = self.cache.get(item.show)
+			
+			if !show
 				tvdb = TvdbParty::Search.new($config[:tvdb_api_key])
 				
 				$log.debug("Search TVDB for matches")
 				results = tvdb.search(item.show)
-				
+			
 				if results.empty?
 					$log.debug("> No match found")
-					return
 				end
 				
-				series = tvdb.get_series_by_id(results[0]["seriesid"])
-				episode = series.get_episode(item.season, item.episode)
+				# Do a second cache check on first results show name
+				show = self.cache.get(results[0]["seriesName"])
 				
-				if !series or !episode
-					$log.debug("> No match found")
-					return
+				if !show
+					show = tvdb.get_series_by_id(results[0]["seriesid"])
+					self.cache.put(show.name, show)
 				end
-				
-				$log.debug("> Match found. Updating attributes..")
-				
-				item.show = series.name
-				item.description = episode.overview
-				item.title = episode.name
-				item.thumb_url = episode.thumb
-				item.year = episode.air_date.year
+			
+			$log.debug("> Match found. Updating attributes..")
+			else
+				$log.debug("Cache hit!")
+			end # !show
+			
+			episode = show.get_episode(item.season, item.episode)
+			
+			if !show or !episode
+				$log.debug("> No match found")
+			end
 
-			rescue
-				$log.error("> Failed to tag file. Search went bad")
-				$log.error($!)
-				raise
-		end	
-	end	
-end
+			
+			item.show = show.name if show
+			item.description = episode && episode.overview ? episode.overview.gsub(/"/, "\\\"") : ""
+			item.title = episode ? episode.name : item.episode.to_s
+			item.thumb_url = episode ? episode.thumb : ""
+			item.year = episode ? episode.air_date.year : 0
+
+		rescue
+			$log.error(item.fullpath + " >> Failed to search TVDB")
+			$log.error($!)
+		end	#begin
+	end	# search
+end # class
